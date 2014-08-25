@@ -1,0 +1,21 @@
+# EXORCISM-4 output for command line arguments: "-q3 -v0 benchmarks\sao2f1.pla"
+# Minimization performed Sun Mar 02 09:18:41 2014
+# Initial statistics: Cubes = 10  Literals = 80
+# Final   statistics: Cubes = 10  Literals = 80
+# Input file reading and variable reordering time = 0.00 sec
+# Cover generation and ESOP minimization time = 0.00 sec
+.i 10
+.o 1
+.p 10
+.type esop
+--01000000 1
+1-01000-00 1
+-00-000100 1
+101-1011-0 1
+1-111011-0 1
+1-1110-100 1
+-1-1101110 1
+01-1101-10 1
+-101-01110 1
+11-10001-0 1
+.e

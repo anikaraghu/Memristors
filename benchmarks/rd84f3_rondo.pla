@@ -1,0 +1,12 @@
+# RONDO v.1.1 output for command line: "-q3 -v0 benchmarks\rd84f3.pla"
+# Minimization performed Mon Feb 17 21:21:13 2014
+# Quality: "implicit reduction + exact CC (potentially slow, exact)"
+# Initial statistics: Cubes = 1  Literals = 8
+# Final   statistics: Cubes = 1  Literals = 8
+# Input file reading and variable reordering time = 0.00 sec
+# SOP minimization time = 0.00 sec
+.i 8
+.o 1
+.p 1
+11111111  1
+.e

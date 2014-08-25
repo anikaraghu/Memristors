@@ -1,0 +1,52 @@
+# EXORCISM-4 output for command line arguments: "-q3 -v0 benchmarks\max46_d.pla"
+# Minimization performed Sun Mar 02 09:18:41 2014
+# Initial statistics: Cubes = 54  Literals = 434
+# Final   statistics: Cubes = 41  Literals = 297
+# Input file reading and variable reordering time = 0.00 sec
+# Cover generation and ESOP minimization time = 0.02 sec
+.i 9
+.o 1
+.p 41
+.type esop
+1000-1111 1
+10-0-11-0 1
+1000--1-0 1
+-00-11010 1
+-001-101- 1
+00010101- 1
+10--10010 1
+01--10110 1
+100010-10 1
+1001100-0 1
+101011-00 1
+01001-110 1
+01-11--10 1
+01-01011- 1
+-10011111 1
+-100--111 1
+0-1010001 1
+1--000001 1
+10000-001 1
+11-00000- 1
+10-1010-1 1
+1011-1001 1
+-01100101 1
+0011-0111 1
+00110-111 1
+01100-101 1
+0-1011100 1
+0111-10-0 1
+011-010-1 1
+011-01-01 1
+1-1001110 1
+-11100011 1
+01-1110-- 1
+0111--01- 1
+0-01-10-1 1
+--0101001 1
+010-00000 1
+-0-000110 1
+-10100-00 1
+1-01-0101 1
+1101-010- 1
+.e

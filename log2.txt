@@ -1,0 +1,155 @@
+
+C:\Users\Anika\Documents\Memristors\Memristors>REM Argment is either Method1, Method2 or Method3 
+
+C:\Users\Anika\Documents\Memristors\Memristors>echo "" 
+""
+
+C:\Users\Anika\Documents\Memristors\Memristors>echo "Author: Anika Raghuvanshi" 
+"Author: Anika Raghuvanshi"
+
+C:\Users\Anika\Documents\Memristors\Memristors>echo "This Batch file invokes Decision Function program with different arguments 
+"This Batch file invokes Decision Function program with different arguments
+
+C:\Users\Anika\Documents\Memristors\Memristors>echo "Following are some expressions containing Positive Literals only" 
+"Following are some expressions containing Positive Literals only"
+
+C:\Users\Anika\Documents\Memristors\Memristors>echo  "" 
+ ""
+
+C:\Users\Anika\Documents\Memristors\Memristors>java -cp build\classes DecisionFunction.DecisionFunction Method2 (A+B) 
+************************
+Expression: (A+B)
+Optimal solutions (2) : [A, B]
+
+
+C:\Users\Anika\Documents\Memristors\Memristors>java -cp build\classes DecisionFunction.DecisionFunction Method2 (A+B)(C) 
+************************
+Expression: (A+B)(C)
+Optimal solutions (2) : [AC, BC]
+
+
+C:\Users\Anika\Documents\Memristors\Memristors>java -cp build\classes DecisionFunction.DecisionFunction Method2 (A+B)(A+C) 
+************************
+Expression: (A+B)(A+C)
+Optimal solutions (1) : [A]
+
+
+C:\Users\Anika\Documents\Memristors\Memristors>java -cp build\classes DecisionFunction.DecisionFunction Method2 (A+B)(A+C)(C+E) 
+************************
+Expression: (A+B)(A+C)(C+E)
+Optimal solutions (3) : [AC, AE, BC]
+
+
+C:\Users\Anika\Documents\Memristors\Memristors>java -cp build\classes DecisionFunction.DecisionFunction Method2 (A+B)(A+C)(C+E) 
+************************
+Expression: (A+B)(A+C)(C+E)
+Optimal solutions (3) : [AC, AE, BC]
+
+
+C:\Users\Anika\Documents\Memristors\Memristors>java -cp build\classes DecisionFunction.DecisionFunction Method2 (A+B)(A+E)(B+C)(B+E)  
+************************
+Expression: (A+B)(A+E)(B+C)(B+E)
+Optimal solutions (2) : [AB, BE]
+
+
+C:\Users\Anika\Documents\Memristors\Memristors>java -cp build\classes DecisionFunction.DecisionFunction Method2 (A+B)(C+D+E)(A+C+E)(C+B) 
+************************
+Expression: (A+B)(C+D+E)(A+C+E)(C+B)
+Optimal solutions (2) : [AC, BC]
+
+
+C:\Users\Anika\Documents\Memristors\Memristors>java -cp build\classes DecisionFunction.DecisionFunction Method2 (A)(A+E)(B)(B+E)(C)(C+E)(D)(D+E) 
+************************
+Expression: (A)(A+E)(B)(B+E)(C)(C+E)(D)(D+E)
+Optimal solutions (1) : [ABCD]
+
+
+C:\Users\Anika\Documents\Memristors\Memristors>echo "" 
+""
+
+C:\Users\Anika\Documents\Memristors\Memristors>echo "Following examples use expressions containing Negative Literals " 
+"Following examples use expressions containing Negative Literals "
+
+C:\Users\Anika\Documents\Memristors\Memristors>echo "Negative literals are denoted by lowercase letters" 
+"Negative literals are denoted by lowercase letters"
+
+C:\Users\Anika\Documents\Memristors\Memristors>echo "" 
+""
+
+C:\Users\Anika\Documents\Memristors\Memristors>java -cp build\classes DecisionFunction.DecisionFunction Method2 (A+B)(a+C)  
+************************
+Expression: (A+B)(a+C)
+Optimal solutions (2) : [AC, B]
+
+
+C:\Users\Anika\Documents\Memristors\Memristors>java -cp build\classes DecisionFunction.DecisionFunction Method2 (A+B)(A+E)(b+C)(B+E)  
+************************
+Expression: (A+B)(A+E)(b+C)(B+E)
+Optimal solutions (3) : [ABC, AE, BCE]
+
+
+C:\Users\Anika\Documents\Memristors\Memristors>java -cp build\classes DecisionFunction.DecisionFunction Method2 (A+B+C)(c+D+E)(b+K+F)(a+G+H) 
+************************
+Expression: (A+B+C)(c+D+E)(b+K+F)(a+G+H)
+Optimal solutions (6) : [AG, AH, BK, BF, CD, CE]
+
+
+C:\Users\Anika\Documents\Memristors\Memristors>echo "" 
+""
+
+C:\Users\Anika\Documents\Memristors\Memristors>echo "Following examples are trivial examples showing syntax of the arguments" 
+"Following examples are trivial examples showing syntax of the arguments"
+
+C:\Users\Anika\Documents\Memristors\Memristors>echo "Expressions can have whitespaces. Expression must then be within quotes" 
+"Expressions can have whitespaces. Expression must then be within quotes"
+
+C:\Users\Anika\Documents\Memristors\Memristors>echo "" 
+""
+
+C:\Users\Anika\Documents\Memristors\Memristors>java -cp build\classes DecisionFunction.DecisionFunction Method2 A  
+************************
+Expression: A
+Optimal solutions (1) : [A]
+
+
+C:\Users\Anika\Documents\Memristors\Memristors>java -cp build\classes DecisionFunction.DecisionFunction Method2 AG  
+************************
+Expression: AG
+Optimal solutions (2) : [A, G]
+
+
+C:\Users\Anika\Documents\Memristors\Memristors>java -cp build\classes DecisionFunction.DecisionFunction Method2 (A)  
+************************
+Expression: (A)
+Optimal solutions (1) : [A]
+
+
+C:\Users\Anika\Documents\Memristors\Memristors>java -cp build\classes DecisionFunction.DecisionFunction Method2 (AG)  
+************************
+Expression: (AG)
+Optimal solutions (2) : [A, G]
+
+
+C:\Users\Anika\Documents\Memristors\Memristors>java -cp build\classes DecisionFunction.DecisionFunction Method2 (A)(G)  
+************************
+Expression: (A)(G)
+Optimal solutions (1) : [AG]
+
+
+C:\Users\Anika\Documents\Memristors\Memristors>java -cp build\classes DecisionFunction.DecisionFunction Method2 (A)(a)  
+************************
+Expression: (A)(a)
+Optimal solutions (1) : [A]
+
+
+C:\Users\Anika\Documents\Memristors\Memristors>java -cp build\classes DecisionFunction.DecisionFunction Method2 "(A+B) (C)"  
+************************
+Expression: (A+B) (C)
+Optimal solutions (2) : [AC, BC]
+
+
+C:\Users\Anika\Documents\Memristors\Memristors>java -cp build\classes DecisionFunction.DecisionFunction Method2 " ( A + B) (A+C ) "  
+************************
+Expression:  ( A + B) (A+C ) 
+Optimal solutions (1) : [A]
+

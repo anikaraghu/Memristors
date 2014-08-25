@@ -1,0 +1,14 @@
+# RONDO v.1.1 output for command line: "-q3 -v0 benchmarks\carry.pla"
+# Minimization performed Mon Feb 17 21:21:13 2014
+# Quality: "implicit reduction + exact CC (potentially slow, exact)"
+# Initial statistics: Cubes = 4  Literals = 12
+# Final   statistics: Cubes = 3  Literals = 6
+# Input file reading and variable reordering time = 0.00 sec
+# SOP minimization time = 0.00 sec
+.i 3
+.o 1
+.p 3
+1-1  1
+11-  1
+-11  1
+.e

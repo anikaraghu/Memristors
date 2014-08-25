@@ -1,0 +1,53 @@
+# RONDO v.1.1 output for command line: "-q3 -v0 benchmarks\rd73f1.pla"
+# Minimization performed Mon Feb 17 21:21:13 2014
+# Quality: "implicit reduction + exact CC (potentially slow, exact)"
+# Initial statistics: Cubes = 42  Literals = 272
+# Final   statistics: Cubes = 42  Literals = 252
+# Input file reading and variable reordering time = 0.00 sec
+# SOP minimization time = 0.00 sec
+.i 7
+.o 1
+.p 42
+11-1111  1
+1-11111  1
+-111111  1
+111111-  1
+0-00110  1
+-000110  1
+000011-  1
+111-111  1
+000-110  1
+00-1100  1
+0-01100  1
+-001100  1
+000110-  1
+-000101  1
+1-00100  1
+010010-  1
+11111-1  1
+00101-0  1
+00-1010  1
+0-01010  1
+-001010  1
+000101-  1
+00-0011  1
+0-00011  1
+-000011  1
+1-00010  1
+01-0010  1
+-010010  1
+00-1001  1
+0-01001  1
+-001001  1
+1-01000  1
+01-1000  1
+-011000  1
+10-0001  1
+1-00001  1
+01-0001  1
+11-0000  1
+1111-11  1
+0010-01  1
+1010-00  1
+0110-00  1
+.e
