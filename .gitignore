@@ -17,6 +17,7 @@ $RECYCLE.BIN/
 # Misc
 log*.txt
 *.class
+private.*
 
 # =========================
 # Operating System Files
