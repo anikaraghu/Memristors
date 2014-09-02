@@ -27,7 +27,7 @@ public class CircuitTANT {
     private List<Integer> offSet = new ArrayList<>();
     private List<Integer> dontCareSet = new ArrayList<>();
     private List<Integer> minTerms = new ArrayList<>();
-    private List<Integer> implicants = new ArrayList<>();
+    private List<Integer> primeImplicants = new ArrayList<>();
     
     private String kMap4[] = {"abcd","abcD","abCD","abCd",
                               "aBcd","aBcD","aBCD","aBCd",
@@ -172,9 +172,9 @@ public class CircuitTANT {
         System.out.println();
    
 
-        System.out.println(" This is the prime implicants set. "+ implicants.size() + " elements." );
-        for (int i=0; i<implicants.size(); i++) {
-            System.out.print(kernelToString(implicants.get(i)) + " ");
+        System.out.println(" This is the prime implicants set. "+ primeImplicants.size() + " elements." );
+        for (int i=0; i<primeImplicants.size(); i++) {
+            System.out.print(kernelToString(primeImplicants.get(i)) + " ");
         }
         System.out.println();
         
@@ -259,21 +259,25 @@ public class CircuitTANT {
     }
     
     private void createImplicants() { 
-        // Add code here
-        // loop through entire onSet array and call findPrimeImplicants
-
-        
+        for(int i:onSet) {
+            findPrimeImplicants(i);
+        } 
     }
     
     private boolean findPrimeImplicants(int variable) {
-        // Add Code here
-        // return false if variable is NOT a validKernel
-        // write a loop that goes through 2 bits at a time along the entire variable
-        //      call recursively for each subset
-        // if any of them return true, just return true
-        // if ALL of the subset return false, then add to the primeImplicants list
+        if(!validKernel(variable)) {return false;} // return false if variable is NOT a validKernel
+        int flag = 0;
+        //goes through 2 bits at a time along the entire variable
+        for(int mask = 0x30000000; mask!=0; mask=mask>>>2) { 
+            if((variable|mask) == variable) continue;
+            if(findPrimeImplicants(variable|mask)) {flag++;} //call recursively for each subset       
+        }
         
-        
+        //checks that a larger kernel was not added to primeImplicant 
+        //list and that variable is not already in list
+        if(flag == 0 && !primeImplicants.contains(variable)) { 
+            primeImplicants.add(variable);
+        }
         return true;
     } 
     
@@ -307,7 +311,7 @@ public class CircuitTANT {
         createImplicants();
         printMap();
            
-        ArrayList<ArrayList<Integer>> termsList = coveringTable(onSet, implicants);
+        ArrayList<ArrayList<Integer>> termsList = coveringTable(onSet, primeImplicants);
         // System.out.print("(" + minTerms.size() + "," + 
         //        implicants.size() + "," + termsList.size() + ") ");
         
@@ -324,7 +328,7 @@ public class CircuitTANT {
         
         for (int index: solutions.get(0)) {
             // find correct implicant in kernel list
-            diag.addAND (kernelToString(implicants.get(index-1)));
+            diag.addAND (kernelToString(primeImplicants.get(index-1)));
             diag.addOR();
         }      
         
