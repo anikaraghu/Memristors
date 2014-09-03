@@ -281,6 +281,30 @@ public class CircuitTANT {
         return true;
     } 
     
+     /**
+     * Group all Implicants with same Positive Kernels together 
+     * For example: 
+     *      ABef cDe ABgh Dghj abD Cde ghk 
+     * will be grouped into 4 groups as below
+     *      ABef, ABgh (AB as common positive kernel
+     *      cDE Dghj abD (D as common postive kernel)
+     *      Cde (only one implicant with C)
+     *      ghk (no positive kernel)
+     */
+    
+    private ArrayList<ArrayList<Integer>> groupPrimeImplicants () {
+        ArrayList<ArrayList<Integer>> xxx = new ArrayList<>();
+        
+        // Iterate through primeImplicants list
+        //          extract positive kernel
+        //          if new kernel add a new list to xxx list
+        //          if existing, add the item to the existing list
+        // 
+        
+        return xxx;
+        
+    }
+    
     public boolean validKernel(int kern) { //is one kernel valid or not? return true or false
         for(int i=0; i<offSet.size(); i++) {
             if(isXContainedInY(offSet.get(i),kern)) {
@@ -310,7 +334,12 @@ public class CircuitTANT {
     public void evaluateCircuit(boolean batchMode) {        
         createImplicants();
         printMap();
-           
+
+        ArrayList<ArrayList<Integer>> implicantGroups = groupPrimeImplicants();        
+        System.out.println("Groups formed : " + implicantGroups.size());
+        System.out.println(implicantGroups);
+        
+        
         ArrayList<ArrayList<Integer>> termsList = coveringTable(onSet, primeImplicants);
         // System.out.print("(" + minTerms.size() + "," + 
         //        implicants.size() + "," + termsList.size() + ") ");
