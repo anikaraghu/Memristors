@@ -293,7 +293,7 @@ public class CircuitTANT {
      */
     
     private ArrayList<ArrayList<Integer>> groupPrimeImplicants () {
-        ArrayList<ArrayList<Integer>> xxx = new ArrayList<>();
+        ArrayList<ArrayList<Integer>> implicantGroups = new ArrayList<>();
         
         // Iterate through primeImplicants list
         //          extract positive kernel
@@ -301,7 +301,24 @@ public class CircuitTANT {
         //          if existing, add the item to the existing list
         // 
         
-        return xxx;
+        for(int i: primeImplicants) {
+            int positiveKernel = i|(0x55555555); //OR with mask of 010101...
+            int flag = 0;
+            for(ArrayList<Integer> a: implicantGroups) {
+                int element = a.get(0);
+                if((element|(0x55555555)) == positiveKernel) {
+                    a.add(i);
+                    flag++;
+                }
+            }
+            if(flag == 0) {
+                ArrayList<Integer> newPositiveGroup = new ArrayList<>();
+                newPositiveGroup.add(positiveKernel);
+                implicantGroups.add(newPositiveGroup);
+            }            
+        }
+        
+        return implicantGroups;
         
     }
     
