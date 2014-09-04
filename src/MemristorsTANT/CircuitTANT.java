@@ -370,8 +370,16 @@ public class CircuitTANT {
         System.out.println(implicantGroups);
         
         ArrayList<ArrayList<Integer>> tantTerms = 
-                createTANTterms(implicantGroups);        
+                createTANTterms(implicantGroups);
+        
         // print TANT terms here for debugging
+        for (ArrayList<Integer> term: tantTerms) {
+            System.out.print("(" );
+                    for (Integer i:term) {
+                        System.out.print(kernelToString(i) + ", ");
+                    }
+            System.out.println(") + " );
+        }
         
        
         ArrayList<ArrayList<Integer>> termsList = coveringTable(onSet, primeImplicants);
