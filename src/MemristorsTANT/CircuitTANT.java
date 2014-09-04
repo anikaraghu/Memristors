@@ -294,13 +294,7 @@ public class CircuitTANT {
     
     private ArrayList<ArrayList<Integer>> groupPrimeImplicants () {
         ArrayList<ArrayList<Integer>> implicantGroups = new ArrayList<>();
-        
-        // Iterate through primeImplicants list
-        //          extract positive kernel
-        //          if new kernel add a new list to xxx list
-        //          if existing, add the item to the existing list
-        // 
-        
+              
         for(int i: primeImplicants) {
             int positiveKernel = i|(0x55555555); //OR with mask of 010101...
             int flag = 0;
@@ -319,6 +313,25 @@ public class CircuitTANT {
         }
         
         return implicantGroups;
+        
+    }
+
+     /**
+     * Take a group of Implicants from the list, and generate a TANT term 
+     * Create a new list with these TANT terms
+     */
+    
+    private ArrayList<ArrayList<Integer>> 
+            createTANTterms (ArrayList<ArrayList<Integer>> implicantGroups) {
+        
+        ArrayList<ArrayList<Integer>> xxx = new ArrayList<>();
+        
+        // Iterate through implicantGroups
+        // for each group -
+        //    first component of the term is Postive kernel of the group
+        //    identify the T-Implicants (negative kernels) 
+              
+        return xxx;
         
     }
     
@@ -356,7 +369,11 @@ public class CircuitTANT {
         System.out.println("Groups formed : " + implicantGroups.size());
         System.out.println(implicantGroups);
         
+        ArrayList<ArrayList<Integer>> tantTerms = 
+                createTANTterms(implicantGroups);        
+        // print TANT terms here for debugging
         
+       
         ArrayList<ArrayList<Integer>> termsList = coveringTable(onSet, primeImplicants);
         // System.out.print("(" + minTerms.size() + "," + 
         //        implicants.size() + "," + termsList.size() + ") ");
