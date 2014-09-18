@@ -237,8 +237,20 @@ public class CircuitTANT {
     private int kernelLength (Integer k){
         int val = k.intValue();
         int size = 0;
-        //count zeros
+        //count bits
         for (int i=0; i<32; i++) {
+            if (((val >>> i) & 0x1) == 0) {
+                size++;
+            }
+        }
+        return size;
+    }
+    
+    private int zeroCount (Integer k){
+        int val = k.intValue();
+        int size = 0;
+        //count zeros
+        for (int i=0; i<32; i+=2) {
             if (((val >>> i) & 0x1) == 0) {
                 size++;
             }
@@ -321,17 +333,56 @@ public class CircuitTANT {
      * Create a new list with these TANT terms
      */
     
-    private ArrayList<ArrayList<Integer>> 
-            createTANTterms (ArrayList<ArrayList<Integer>> implicantGroups) {
+    private ArrayList<ArrayList<Integer>> createTANTterms 
+            (ArrayList<ArrayList<Integer>> implicantGroups) {
         
-        ArrayList<ArrayList<Integer>> xxx = new ArrayList<>();
+        ArrayList<ArrayList<Integer>> TANTterms = new ArrayList<>();
         
+        for(ArrayList<Integer> a:implicantGroups) {
+            int element = a.get(0);
+            int positiveKernel = (element|(0x55555555));
+            ArrayList<Integer> TANTgroup = new ArrayList<>();
+            TANTgroup.add(positiveKernel);
+                        
+            //find which terms are part of offSet
+            ArrayList<Integer> zeroTerms = new ArrayList<>();
+            for(int i:offSet) {
+                if(isXContainedInY(i, positiveKernel)) {
+                    zeroTerms.add(i);
+                }
+            }
+            
+            //out of the terms in offset, how many zeros are contained in the
+            //term with the most zeros (ie. if zeroTerms contained 0011 and
+            //0111, numZeros would equal 2 at the end of the loop
+            int numZeros = 0;
+            for(int i: zeroTerms) {
+                int zeroCount = zeroCount(i);
+                if(zeroCount > numZeros) {
+                    numZeros = zeroCount;
+                }
+            }
+            
+            //Find all terms in zeroTerms which contain this amount of zeros.
+            //For these terms, change the zeros (10 bit) to a 11 bit and add it
+            //to the TANT group which already contains the positive kernel
+            for(int i:zeroTerms) {
+                int zeroCount = zeroCount(i);
+                //System.out.println(kernelToString(i) + " " + zeroCount);
+                if(zeroCount == numZeros) {
+                    TANTgroup.add(i | 0x55555555);
+                }
+            }
+            
+            TANTterms.add(TANTgroup);
+        }
         // Iterate through implicantGroups
         // for each group -
         //    first component of the term is Postive kernel of the group
         //    identify the T-Implicants (negative kernels) 
               
-        return xxx;
+        
+        return TANTterms;
         
     }
     
