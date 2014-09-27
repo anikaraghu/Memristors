@@ -233,7 +233,21 @@ public class CircuitTANT {
         }
         //printMap();
     }
-        
+    
+    public void setPLX (int numVars, List<String> stmts0, List<String> stmts1) {
+        // Add elements to onSet and offSet
+        dimension= (int) Math.pow(2, numVars);
+        for (int i=0; i<stmts0.size(); i++) {
+            int element = binaryToElement(stmts0.get(i));
+            offSet.add(element);
+        }
+        for (int i=0; i<stmts1.size(); i++) {
+            int element = binaryToElement(stmts1.get(i));
+            onSet.add(element);
+        }
+        printMap();
+    }
+    
     private int kernelLength (Integer k){
         int val = k.intValue();
         int size = 0;

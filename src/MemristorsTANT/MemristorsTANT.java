@@ -30,7 +30,7 @@ public class MemristorsTANT {
         }        
         String equation;
         while(true) {
-            System.out.print("Enter logic equation, or Filename (*.txt, *.pla) : ");
+            System.out.print("Enter logic equation, or Filename (*.txt, *.pla, *.plx) : ");
             equation = reader.nextLine();
             if (equation.isEmpty()) {
                 break;
@@ -40,7 +40,10 @@ public class MemristorsTANT {
             }
             else if (equation.endsWith(".pla")) {
                 readPLAFile(equation);
-            }            
+            }
+            else if (equation.endsWith(".plx")) {
+                readPLXFile(equation);
+            }   
             else {
                 CircuitTANT circuit = new CircuitTANT();            
                 circuit.setEquation(equation);
@@ -91,6 +94,46 @@ public class MemristorsTANT {
          
          CircuitTANT circuit = new CircuitTANT();   
          circuit.setPLA(numVars, stmts);
+         circuit.evaluateCircuit(batchMode);
+
+         System.out.println(fname + ", " + numVars + ", " +
+                 numStmts + ", " + circuit.getTotalPulses()); 
+       
+    }
+    
+    public void readPLXFile(String fname) throws IOException {
+         Scanner fReader = new Scanner(new File(fname));
+         int numVars = 0;
+         int numStmts = 0;
+         List<String> stmts0 = new ArrayList<>();
+         List<String> stmts1 = new ArrayList<>();
+         
+         while (fReader.hasNext()) {
+            String line = fReader.nextLine();
+
+            if (line.startsWith("#") || line.startsWith(".type")) {
+                continue;          
+            }
+            else if (line.startsWith(".i")) {
+                numVars = Integer.parseInt(line.substring(3));           
+            }
+            else if (line.startsWith(".o")) {
+                if(line.endsWith("1")!=true) {return;} 
+            }
+            else if (line.startsWith(".p")) {
+                numStmts = Integer.parseInt(line.substring(3));
+            }
+            else if (line.startsWith(".e")) {
+                break;
+            }
+            else if (line.endsWith("0")) {
+                stmts0.add(line.substring(0, numVars));
+            } 
+            else stmts1.add(line.substring(0, numVars));
+         }
+         
+         CircuitTANT circuit = new CircuitTANT();   
+         circuit.setPLX(numVars, stmts0, stmts1);
          circuit.evaluateCircuit(batchMode);
 
          System.out.println(fname + ", " + numVars + ", " +
