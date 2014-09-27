@@ -365,26 +365,39 @@ public class CircuitTANT {
                     zeroTerms.add(i);
                 }
             }
-            
-            //out of the terms in offset, how many zeros are contained in the
-            //term with the most zeros (ie. if zeroTerms contained 0011 and
-            //0111, numZeros would equal 2 at the end of the loop
-            int numZeros = 0;
-            for(int i: zeroTerms) {
-                int zeroCount = zeroCount(i);
-                if(zeroCount > numZeros) {
-                    numZeros = zeroCount;
+
+            while (zeroTerms.size() > 0) {
+                //out of the terms in offset, how many zeros are contained in the
+                //term with the most zeros (ie. if zeroTerms contained 0011 and
+                //0111, numZeros would equal 2 at the end of the loop
+                int numZeros = 0;
+                for (int i : zeroTerms) {
+                    int zeroCount = zeroCount(i);
+                    if (zeroCount > numZeros) {
+                        numZeros = zeroCount;
+                    }
                 }
-            }
-            
-            //Find all terms in zeroTerms which contain this amount of zeros.
-            //For these terms, change the zeros (10 bit) to a 11 bit and add it
-            //to the TANT group which already contains the positive kernel
-            for(int i:zeroTerms) {
-                int zeroCount = zeroCount(i);
-                //System.out.println(kernelToString(i) + " " + zeroCount);
-                if(zeroCount == numZeros) {
-                    TANTgroup.add(i | 0x55555555);
+
+                //Find all terms in zeroTerms which contain this amount of zeros.
+                //For these terms, change the zeros (10 bit) to a 11 bit and add it
+                //to the TANT group which already contains the positive kernel
+                for (int i : zeroTerms) {
+                    int zeroCount = zeroCount(i);
+                    //System.out.println(kernelToString(i) + " " + zeroCount);
+                    if (zeroCount == numZeros) {
+                        TANTgroup.add(i | 0x55555555);
+                    }
+                }
+                
+                // Now, remove the terms from zeroTerms, if it is covered by the
+                // tail factors that were just added
+                
+                for (int i = zeroTerms.size() - 1; i >= 0; i--) {
+                    for (int j=1; j<TANTgroup.size(); j++) { // start from 1
+                        if (isXContainedInY(zeroTerms.get(i), TANTgroup.get(j))) {
+                            zeroTerms.remove(i);
+                        }
+                    }
                 }
             }
             
