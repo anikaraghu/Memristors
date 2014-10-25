@@ -19,6 +19,7 @@ log*.txt
 *.class
 private.*
 build/
+benchmarks_temp/
 
 
 # =========================
