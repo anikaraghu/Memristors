@@ -366,7 +366,7 @@ public class CircuitTANT {
                 }
             }
 
-            if (zeroTerms.size() > 0) {
+            while(zeroTerms.size() > 0) {
                 //out of the terms in offset, how many zeros are contained in the
                 //term with the most zeros (ie. if zeroTerms contained 0011 and
                 //0111, numZeros would equal 2 at the end of the loop
@@ -392,15 +392,15 @@ public class CircuitTANT {
                 // Now, remove the terms from zeroTerms, if it is covered by the
                 // tail factors that were just added
                 
-                /*for (int i = zeroTerms.size() - 1; i >= 0; i--) {
+                for (int i = zeroTerms.size() - 1; i >= 0; i--) {
                     for (int j=1; j<TANTgroup.size(); j++) { // start from 1
                         if (isXContainedInY(zeroTerms.get(i), TANTgroup.get(j))) {
                             zeroTerms.remove(i);
+                            break;
                         }
                     }
                         
                 }
-                        */
             }
             
             TANTterms.add(TANTgroup);
