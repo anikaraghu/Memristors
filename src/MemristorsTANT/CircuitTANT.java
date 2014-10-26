@@ -398,8 +398,7 @@ public class CircuitTANT {
                             zeroTerms.remove(i);
                             break;
                         }
-                    }
-                        
+                    }                        
                 }
             }
             
@@ -460,28 +459,16 @@ public class CircuitTANT {
                     }
             System.out.println(") + " );
         }
+                     
+        DiagramTANT diag = new DiagramTANT((int) Math.sqrt(dimension), batchMode);
         
-       
-        ArrayList<ArrayList<Integer>> termsList = coveringTable(onSet, primeImplicants);
-        // System.out.print("(" + minTerms.size() + "," + 
-        //        implicants.size() + "," + termsList.size() + ") ");
-        
-        DecisionFnMethod3 f = new DecisionFnMethod3();
-        ArrayList<ArrayList<Integer>> solutions = f.evaluate(termsList);
-        
-        
-        DiagramSOP diag = new DiagramSOP((int) Math.sqrt(dimension), batchMode);
-        
-        if (solutions.isEmpty()) {
-            System.out.println("Decision Function failure. No Solution");
-            return;
-        }
-        
-        for (int index: solutions.get(0)) {
-            // find correct implicant in kernel list
-            diag.addAND (kernelToString(primeImplicants.get(index-1)));
+        for (ArrayList<Integer> term: tantTerms) {
+            diag.addHead(kernelToString(term.get(0)));
+            for (int i=1; i<term.size(); i++) {
+                diag.addTail(kernelToString(term.get(i)));
+            }                    
             diag.addOR();
-        }      
+        }
         
         //diag.print();
         totalPulses = diag.getTotalPulses();
