@@ -1,7 +1,6 @@
 
 package MemristorsTANT;
 
-import MemristorsSOP.*;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -26,8 +25,10 @@ public class CircuitPanelTANT extends JPanel{
     
     private int y_sumLine;
     private int y_productLine;
+    private int y_intermediateLineOffset;
     
     private List<String> drawItems = new ArrayList<>();
+    private List<String> level3loops = new ArrayList<>();
     String allVariables = "";
     
     public void setVariables(int num) {
@@ -36,14 +37,27 @@ public class CircuitPanelTANT extends JPanel{
         }
     }
     
-    public void addAND (String varnames) {
+    public void setL3loop (String varnames) {
+        level3loops.add(varnames.toLowerCase());
+        drawItems.add(varnames.toLowerCase());
+        totalPulses += (varnames.length() + 1);
+    }
+        
+    public void addHead (String varnames) {
         drawItems.add(varnames);
         totalPulses += (varnames.length() + 1);
     }
     
+    public void addTail (String varnames) {
+        //Integer index = level3loops.indexOf(varnames);
+        //drawItems.add("~"+index.toString());
+        drawItems.add("~"+varnames.toLowerCase());
+        totalPulses++;
+    }
+    
     public void addOR () {
         drawItems.add("+");
-        totalPulses += 1;  
+        totalPulses++;  
     }
     
     public int getTotalPulses() {
@@ -74,15 +88,24 @@ public class CircuitPanelTANT extends JPanel{
             }
         }
         for (int i=0; i<drawItems.size(); i++) {
-            if (drawItems.get(i).equals("+")) {
+            String item = drawItems.get(i);
+            if (item.equals("+")) {
                 drawSumLine(g, step++);
             }
+            else if (item.startsWith("~")) {
+                drawProductLineTail (g, step, item.substring(1));
+                step++;
+            }
+            else if (item.toLowerCase().equals(item)) {
+                // draw level 3 TANT terms
+                drawIntermediateLine(g, step, item);
+                step = step + item.length();
+            }
             else {
-                drawProductLine(g, step, drawItems.get(i));
-                step = step + drawItems.get(i).length();
+                drawProductLineHead(g, step, item);
+                step = step + item.length();
             }
         }
-        
         printPulses(g);        
         printExpression(g);                        
     }
@@ -92,11 +115,14 @@ public class CircuitPanelTANT extends JPanel{
         int y1_center;
         int y2_center;
         int x_center;
+        int horizontalLines;
         
-        y_interval = (y_max-y_start-200)/varnames.length();
+        horizontalLines = varnames.length() + level3loops.size() + 2;
+        
+        y_interval = (y_max-y_start-200)/horizontalLines;
         if (y_interval < 40) {
             y_interval = 40;
-            y_max = y_start + y_interval*varnames.length() + 100;
+            y_max = y_start + y_interval*horizontalLines + 100;
         }
         zeroPulses = 1;
         
@@ -108,19 +134,14 @@ public class CircuitPanelTANT extends JPanel{
             y1_center = y_start + y_interval * index;
             g.drawChars(varnames.toCharArray(), i, 1, x_start, y1_center+5);
             g.drawLine(x_start + 50, y1_center, x_max, y1_center);
-            
-            // Draw second horizontal line denoting the negated input variable 
-            y2_center = y1_center + y_interval/3;
-            g.drawString("0", x_start+40, y2_center+5);
-            //g.setColor(Color.LIGHT_GRAY);
-            g.drawLine(x_start + 50, y2_center, x_max, y2_center); 
-            //g.setColor(Color.BLACK);
-         
-            // Draw Imply Gate on second line, 
-            // and connect from first line to show NOT
-            x_center = x_start + 100;
-            connectAndDrawImplyGate(g, x_center, y1_center, x_center, y2_center);
-            
+                   
+        }
+        
+        // Draw lines for common TANT terms in level3
+        y_intermediateLineOffset = y_start + y_interval * varnames.length();
+        for (int i=0; i<level3loops.size(); i++) {
+            y1_center = y_intermediateLineOffset + y_interval * i;
+            g.drawLine(x_start + 50, y1_center, x_max, y1_center);
         }
         
         // Draw two lines for two working memristors (product line and sum line)
@@ -139,7 +160,7 @@ public class CircuitPanelTANT extends JPanel{
 
     }
     
-    private void drawProductLine(Graphics g, int step, String varnames) {
+    private void drawProductLineHead(Graphics g, int step, String varnames) {
         int x_center = x_start + 100 + (x_interval * step);
         //g.drawLine(x_center, y_start-10, x_center, y_max);
         
@@ -157,15 +178,49 @@ public class CircuitPanelTANT extends JPanel{
                 index = letter - 'A';
                 y_center = y_start + y_interval * index;
             }        
-            else if (letter >= 'a' && letter <= 'z') {
-                index = letter - 'a';
-                y_center = y_start + y_interval * index + y_interval/3;
-            }
             else {
                 return;
             }
                         
             connectAndDrawImplyGate(g, x_center, y_center, x_center, y_productLine);
+            
+            x_center = x_center + x_interval;
+        }
+    }
+    
+    private void drawProductLineTail(Graphics g, int step, String varnames) {
+        int x_center = x_start + 100 + (x_interval * step);
+        int lineIndex = level3loops.indexOf(varnames);
+        int y_intermediate = y_intermediateLineOffset + lineIndex * y_interval;
+         
+        connectAndDrawImplyGate(g, x_center, y_intermediate, x_center, y_productLine);
+    }
+      
+    private void drawIntermediateLine(Graphics g, int step, String varnames) {
+        int x_center = x_start + 100 + (x_interval * step);
+        int lineIndex = level3loops.indexOf(varnames);
+        int y_intermediate = y_intermediateLineOffset + lineIndex * y_interval;
+        //g.drawLine(x_center, y_start-10, x_center, y_max);
+        
+        if (step > 1) {
+            g.drawString("0", x_center-15, y_intermediate-2);
+            zeroPulses++;
+        }
+
+        for (int i=0; i<varnames.length(); i++) {
+            char letter = varnames.charAt(i);
+            int index;
+            int y_center;
+            
+            if (letter >= 'a' && letter <= 'z') {
+                index = letter - 'a';
+                y_center = y_start + y_interval * index;
+            }        
+            else {
+                return;
+            }
+                        
+            connectAndDrawImplyGate(g, x_center, y_center, x_center, y_intermediate);
             
             x_center = x_center + x_interval;
         }

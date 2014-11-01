@@ -461,6 +461,12 @@ public class CircuitTANT {
         }
                      
         DiagramTANT diag = new DiagramTANT((int) Math.sqrt(dimension), batchMode);
+       
+        for (ArrayList<Integer> term: tantTerms) {
+            for (int i=1; i<term.size(); i++) {
+                diag.setL3loop(kernelToString(term.get(i)));
+            }                    
+        }
         
         for (ArrayList<Integer> term: tantTerms) {
             diag.addHead(kernelToString(term.get(0)));
@@ -470,7 +476,7 @@ public class CircuitTANT {
             diag.addOR();
         }
         
-        //diag.print();
+        diag.print();
         totalPulses = diag.getTotalPulses();
     }
     
