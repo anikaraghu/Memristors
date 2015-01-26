@@ -42,11 +42,12 @@ public class MemristorsMV2 {
             else if (equation.endsWith(".pla")) {
                 readPLAFile(equation);
             }            
-            else {
+            /*else {
                 Circuit circuit = new Circuit();
                 circuit.setEquation(equation);
                 circuit.evaluateCircuit(batchMode);
-            }   
+            }  
+            */
         }
     }
     
@@ -58,7 +59,7 @@ public class MemristorsMV2 {
          for(int i=0; i<dimension*dimension; i++) {
              kValues[i] = fReader.nextInt();
          }
-         Circuit circuit = new Circuit();            
+         Circuit circuit = new Circuit(dimension);            
          circuit.setKMap(dimension,kValues);
          circuit.evaluateCircuit(batchMode);
     }
@@ -91,7 +92,7 @@ public class MemristorsMV2 {
             else {stmts.add(line.substring(0, numVars));} 
          }
          
-         Circuit circuit = new Circuit();   
+         Circuit circuit = new Circuit(numVars);   
          circuit.setPLA(numVars, stmts);
          circuit.evaluateCircuit(batchMode);
 

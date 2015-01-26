@@ -29,8 +29,14 @@ public class Circuit {
     private int dimension;
     private List<Integer> kernel = new ArrayList<>();
     private int totalPulses = 0;
+    private int[] randomizedVars;
     
-    public Circuit() { };
+    public Circuit(int numVars) {
+        numVars += numVars%2; //if numVars is odd, add 1 so the pairing will match up later
+        //create variable array to be randomized and later mapped to MV variables
+        randomizedVars = new int[numVars]; 
+        for (int i:randomizedVars) {randomizedVars[i] = i;} //later: add randomization
+    }
     
     //given the position variable, returns the position number
     private int varPosition(char c) {
@@ -94,7 +100,23 @@ public class Circuit {
     }
     
     private int binaryToElement(String s) {
-        int element = 0xFFFFFFFF; //creates 32-bit int with all 1'
+        int binary = Integer.parseInt(s); //convert (ie. '010' to the integer 010)
+        int element = 0;
+        int i=0;
+        int n1, n2, bit1, bit2, temp;
+        while (i<randomizedVars.length) {
+            n1 = randomizedVars[i];
+            n2 = randomizedVars[i+1];
+            bit2 = ((1<<n2) & binary) >> n2; //extract second bit
+            bit1 = (((1<<n1) & binary) >> n1) << 1; //extract first bit
+            temp = bit1 | bit2;
+            temp = (0b1000)>> temp; //convert binary to multivariable bit
+            temp = temp << (i*2); //shift bit over (second pair will be shifted by 4)
+            element = element | temp;
+            i+=2;
+        }
+        
+        /*int element = 0xFFFFFFFF; //creates 32-bit int with all 1'
         char temp[] = s.toCharArray();
         for (int j=0; j<temp.length; j++) {
             int position = (14 - j);
@@ -104,7 +126,7 @@ public class Circuit {
             else if (temp[j] == '1') {
                 element = setPositiveValue(element, position);                  
             }
-        }
+        */
         return element;
     }
     
@@ -187,7 +209,7 @@ public class Circuit {
         dimension = (int) Math.pow(2, numVars);
         for (int i=0; i<stmts.size(); i++) {
             int element = binaryToElement(stmts.get(i));
-            onSet.add(element);
+            onSetMV.add(element);
         }        
 
         //Add elements to offSet[], if not covered by onSet
@@ -198,19 +220,29 @@ public class Circuit {
             
             // Now check if this value is not in OnSet
             boolean found = false;
-            for (int j=0; j<onSet.size(); j++) {
-                if (isXContainedInY(element, onSet.get(j))) {
+            for (int j=0; j<onSetMV.size(); j++) {
+                if (isXContainedInY(element, onSetMV.get(j))) {
                     found = true;
                 }
             }
             if (!found) {
-                offSet.add(element);
+                offSetMV.add(element);
             }
         }
-        //convert onSet to onSetMV and offset to offSetMV
-        
         //printMap();
     }
+    
+    //convert onSet to onSetMV and offset to offSetMV
+    /*private void createMVSet (int numVars) {
+        numVars += numVars%2; //if numVars is odd, add 1 so the pairing will match up later
+        //create variable array to be randomized and later mapped to MV variables
+        int[] randomizedVars = new int[numVars]; 
+        for (int i:randomizedVars) {randomizedVars[i] = i;} //later: add randomization
+        for (int element:onSet) {
+            
+        }
+    }
+    */
     
     private int kernelLength (Integer k){
         int val = k.intValue();
