@@ -245,7 +245,7 @@ public class CircuitTANT {
             int element = binaryToElement(stmts1.get(i));
             onSet.add(element);
         }
-        printMap();
+        //printMap();
     }
     
     private int kernelLength (Integer k){
@@ -442,23 +442,23 @@ public class CircuitTANT {
     
     public void evaluateCircuit(boolean batchMode) {        
         createImplicants();
-        printMap();
+        //printMap();
 
         ArrayList<ArrayList<Integer>> implicantGroups = groupPrimeImplicants();        
-        System.out.println("Groups formed : " + implicantGroups.size());
-        System.out.println(implicantGroups);
+        //System.out.println("Groups formed : " + implicantGroups.size());
+        //System.out.println(implicantGroups);
         
         ArrayList<ArrayList<Integer>> tantTerms = 
                 createTANTterms(implicantGroups);
         
         // print TANT terms here for debugging
-        for (ArrayList<Integer> term: tantTerms) {
-            System.out.print("(" );
-                    for (Integer i:term) {
-                        System.out.print(kernelToString(i) + ", ");
-                    }
-            System.out.println(") + " );
-        }
+        //for (ArrayList<Integer> term: tantTerms) {
+        //    System.out.print("(" );
+        //            for (Integer i:term) {
+        //                System.out.print(kernelToString(i) + ", ");
+        //            }
+        //    System.out.println(") + " );
+        //}
                      
         DiagramTANT diag = new DiagramTANT((int) Math.sqrt(dimension), batchMode);
        
@@ -476,7 +476,7 @@ public class CircuitTANT {
             diag.addOR();
         }
         
-        diag.print();
+        //diag.print();
         totalPulses = diag.getTotalPulses();
     }
     

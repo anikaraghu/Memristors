@@ -25,23 +25,34 @@ public class MemristorsTANT {
         
         if (args.length > 0) {
             batchMode = true;
-            readPLAFile(args[0]);
+            String fname = args[0];
+            if (fname.endsWith(".txt") || fname.endsWith(".TXT") ) {
+                readKMapFile(fname);
+            }
+            else if (fname.endsWith(".pla") || fname.endsWith(".PLA")) {
+                readPLAFile(fname);
+            }
+            else if (fname.endsWith(".plx") || fname.endsWith(".PLX")) {
+                readPLXFile(fname);
+            }   
             return;
         }        
-        String equation;
+        
+        String equation;       
         while(true) {
             System.out.print("Enter logic equation, or Filename (*.txt, *.pla, *.plx) : ");
             equation = reader.nextLine();
+         
             if (equation.isEmpty()) {
                 break;
             }
-            else if (equation.endsWith(".txt")) {
+            else if (equation.endsWith(".txt") || equation.endsWith(".TXT") ) {
                 readKMapFile(equation);
             }
-            else if (equation.endsWith(".pla")) {
+            else if (equation.endsWith(".pla") || equation.endsWith(".PLA")) {
                 readPLAFile(equation);
             }
-            else if (equation.endsWith(".plx")) {
+            else if (equation.endsWith(".plx") || equation.endsWith(".PLX")) {
                 readPLXFile(equation);
             }   
             else {
@@ -106,8 +117,8 @@ public class MemristorsTANT {
          int numVars = 0;
          int numStmts = 0;
          List<String> stmts0 = new ArrayList<>();
-         List<String> stmts1 = new ArrayList<>();
-         
+         List<String> stmts1 = new ArrayList<>();         
+       
          while (fReader.hasNext()) {
             String line = fReader.nextLine();
 
@@ -129,9 +140,11 @@ public class MemristorsTANT {
             else if (line.endsWith("0")) {
                 stmts0.add(line.substring(0, numVars));
             } 
-            else stmts1.add(line.substring(0, numVars));
-         }
-         
+            else {
+                stmts1.add(line.substring(0, numVars));
+            }
+         }       
+        
          CircuitTANT circuit = new CircuitTANT();   
          circuit.setPLX(numVars, stmts0, stmts1);
          circuit.evaluateCircuit(batchMode);

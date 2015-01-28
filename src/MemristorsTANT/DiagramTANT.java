@@ -64,6 +64,7 @@ public class DiagramTANT {
     public void addTail(String vars) {
         equation += ".";
         equation += vars.toLowerCase();
+        pulseCount++;
         if (!batchMode) {p.addTail(vars.toLowerCase());}
     }
     
