@@ -35,7 +35,9 @@ public class Circuit {
         numVars += numVars%2; //if numVars is odd, add 1 so the pairing will match up later
         //create variable array to be randomized and later mapped to MV variables
         randomizedVars = new int[numVars]; 
-        for (int i:randomizedVars) {randomizedVars[i] = i;} //later: add randomization
+        for (int i=0; i<numVars; i++) {
+            randomizedVars[i] = i;
+        } //later: add randomization
     }
     
     //given the position variable, returns the position number
@@ -100,33 +102,22 @@ public class Circuit {
     }
     
     private int binaryToElement(String s) {
-        int binary = Integer.parseInt(s); //convert (ie. '010' to the integer 010)
+        int binary = Integer.parseInt(s,2); //convert (ie. '010' to the binary integer 010)
         int element = 0;
         int i=0;
         int n1, n2, bit1, bit2, temp;
         while (i<randomizedVars.length) {
             n1 = randomizedVars[i];
             n2 = randomizedVars[i+1];
+            n1 = randomizedVars.length - 1 - n1; //switch bit order
+            n2 = randomizedVars.length - 1 - n2;
             bit2 = ((1<<n2) & binary) >> n2; //extract second bit
             bit1 = (((1<<n1) & binary) >> n1) << 1; //extract first bit
             temp = bit1 | bit2;
             temp = (0b1000)>> temp; //convert binary to multivariable bit
-            temp = temp << (i*2); //shift bit over (second pair will be shifted by 4)
-            element = element | temp;
+            element = (element << 4) | temp; //shifts bits over, new pair takes rightmost four bits
             i+=2;
         }
-        
-        /*int element = 0xFFFFFFFF; //creates 32-bit int with all 1'
-        char temp[] = s.toCharArray();
-        for (int j=0; j<temp.length; j++) {
-            int position = (14 - j);
-            if (temp[j] == '0') {
-                element = setNegativeValue(element, position);
-            }
-            else if (temp[j] == '1') {
-                element = setPositiveValue(element, position);                  
-            }
-        */
         return element;
     }
     
@@ -170,16 +161,16 @@ public class Circuit {
     }
     
     public void printMap() {
-        System.out.print("OnSet " + onSet.size() + " elements : " );
-        for (int i=0; i<onSet.size(); i++) {
-            System.out.print(kernelToString(onSet.get(i)) + " ");
+        System.out.print("OnSet " + onSetMV.size() + " elements : " );
+        for (int i=0; i<onSetMV.size(); i++) {
+            System.out.print(kernelToString(onSetMV.get(i)) + " ");
             //System.out.println(Integer.toBinaryString(onSet.get(i)));
         }
         System.out.println();
         
-        System.out.print("Off-set. " + offSet.size() + " elements: " );
-        for (int i=0; i<offSet.size(); i++) {
-            System.out.print(kernelToString(offSet.get(i)) + " ");
+        System.out.print("Off-set. " + offSetMV.size() + " elements: " );
+        for (int i=0; i<offSetMV.size(); i++) {
+            System.out.print(kernelToString(offSetMV.get(i)) + " ");
             //System.out.println(Integer.toBinaryString(offSet.get(i)));
         }
         System.out.println();
@@ -229,7 +220,7 @@ public class Circuit {
                 offSetMV.add(element);
             }
         }
-        //printMap();
+        printMap();
     }
     
     //convert onSet to onSetMV and offset to offSetMV
