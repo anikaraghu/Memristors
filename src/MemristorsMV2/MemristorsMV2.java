@@ -36,14 +36,14 @@ public class MemristorsMV2 {
             if (equation.isEmpty()) {
                 break;
             }
-            else if (equation.endsWith(".txt")) {
+            /*else if (equation.endsWith(".txt")) {
                 readKMapFile(equation);
-            }
+            }*/
             else if (equation.endsWith(".pla")) {
                 readPLAFile(equation);
             }            
             /*else {
-                Circuit circuit = new Circuit();
+                CircuitMV2 circuit = new CircuitMV2();
                 circuit.setEquation(equation);
                 circuit.evaluateCircuit(batchMode);
             }  
@@ -51,7 +51,7 @@ public class MemristorsMV2 {
         }
     }
     
-    public void readKMapFile(String fname) throws IOException {
+    /*public void readKMapFile(String fname) throws IOException {
          Scanner fReader = new Scanner(new File(fname));
          
          int dimension = fReader.nextInt();
@@ -59,11 +59,10 @@ public class MemristorsMV2 {
          for(int i=0; i<dimension*dimension; i++) {
              kValues[i] = fReader.nextInt();
          }
-         Circuit circuit = new Circuit(dimension);            
+         CircuitMV2 circuit = new CircuitMV2(dimension);            
          circuit.setKMap(dimension,kValues);
          circuit.evaluateCircuit(batchMode);
-    }
-    
+    }*/    
   
     public void readPLAFile(String fname) throws IOException {
          Scanner fReader = new Scanner(new File(fname));
@@ -92,7 +91,7 @@ public class MemristorsMV2 {
             else {stmts.add(line.substring(0, numVars));} 
          }
          
-         Circuit circuit = new Circuit(numVars);   
+         CircuitMV2 circuit = new CircuitMV2(numVars);   
          circuit.setPLA(numVars, stmts);
          circuit.evaluateCircuit(batchMode);
 

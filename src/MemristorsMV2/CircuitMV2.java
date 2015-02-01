@@ -15,7 +15,7 @@ import java.util.*;
   R    A    B    C    D    E    F    G    H    //
  00 0100 1000 0001 0000 0000 0000 0000 0000    //position values-this shows A1B0C3
 *******************************************************************************/
-public class Circuit {
+public class CircuitMV2 {
     private String iEquation;
     private String minterm[];
     private List<Integer> onSet = new ArrayList<>();
@@ -27,19 +27,22 @@ public class Circuit {
                               "ABcd","ABcD","ABCD","ABCd",
                               "Abcd","AbcD","AbCD","AbCd"};
     private int dimension;
-    private List<Integer> kernel = new ArrayList<>();
     private int totalPulses = 0;
     private int[] randomizedVars;
+    private int kernelNumber = 0;
+    private int numMultiVars;
     
-    public Circuit(int numVars) {
+    public CircuitMV2(int numVars) {
         numVars += numVars%2; //if numVars is odd, add 1 so the pairing will match up later
         //create variable array to be randomized and later mapped to MV variables
         randomizedVars = new int[numVars]; 
         for (int i=0; i<numVars; i++) {
             randomizedVars[i] = i;
         } //later: add randomization
+        numMultiVars = randomizedVars.length;
     }
     
+    /*
     //given the position variable, returns the position number
     private int varPosition(char c) {
         int position = 14 - (c - 'A'); 
@@ -93,7 +96,7 @@ public class Circuit {
     private int getVarValue (int x, char c) {
         int pos = varPosition(c);
         return getVarValueAtPosition(x, pos);
-    }
+    }*/
     
     //returns true if x is contained in y
     private boolean isXContainedInY (int x, int y) {
@@ -121,7 +124,7 @@ public class Circuit {
         return element;
     }
     
-    public void setEquation(String equation){
+    /*public void setEquation(String equation){
         iEquation = equation;  
         minterm = iEquation.split("\\+");
        
@@ -142,23 +145,37 @@ public class Circuit {
             }
          }
          return element;
-    }
+    }*/
     
     private String kernelToString(Integer element) {
         String strVal = "";
-        for (int position=14; position >=0; position--) {
-            if(positionToVar(element, position) != 0) {
-                strVal = strVal + positionToVar(element, position);
+        String temp;
+        char variable = 'Z';
+        int field;
+        while(element > 0) {
+            field = element & 0b1111; //extracts last 4 bits
+            if(field == 0b1111) {
+                temp = "";
+            } else { //the following code should print X(013) if X = 1101
+                temp = variable + "(";
+                if((field & 0b1000) == 0b1000) {temp += "0";}
+                if((field & 0b0100) == 0b0100) {temp += "1";}
+                if((field & 0b0010) == 0b0010) {temp += "2";}
+                if((field & 0b0001) == 0b0001) {temp += "3";}
+                temp += ")";
+                strVal = temp + strVal;
             }
+            variable--; //goes from Z to Y to X, etc.
+            element = element >> 4; //on to the next variable
         }
         return strVal;
     }        
-        
-    public void printEquation() {
+    
+    /*public void printEquation() {
         for (int i=0; i<minterm.length; i++) {
             System.out.println(minterm[i]);
         }
-    }
+    }*/
     
     public void printMap() {
         System.out.print("OnSet " + onSetMV.size() + " elements : " );
@@ -174,15 +191,9 @@ public class Circuit {
             //System.out.println(Integer.toBinaryString(offSet.get(i)));
         }
         System.out.println();
-        System.out.print("Kernel set. " + kernel.size() + " elements: " );
-        for (int i=0; i<kernel.size(); i++) {
-            System.out.print(kernelToString(kernel.get(i)) + " ");
-            //System.out.println(Integer.toBinaryString(kernel.get(i)));
-        }
-        System.out.println();
 }
     
-    public void setKMap(int numVars, int kValues[]) {
+    /*public void setKMap(int numVars, int kValues[]) {
         dimension = numVars*numVars;
         for(int i=0; i<dimension; i++) {
             if(kValues[i] == 0) {
@@ -192,7 +203,7 @@ public class Circuit {
                 onSet.add(mintermToInt(kMap4[i])); //creates onSet array
             }
         }
-    }
+    }*/
     
     public void setPLA (int numVars, List<String> stmts) {
         // Add elements to OnSet
@@ -233,7 +244,6 @@ public class Circuit {
             
         }
     }
-    */
     
     private int kernelLength (Integer k){
         int val = k.intValue();
@@ -245,36 +255,23 @@ public class Circuit {
             }
         }
         return size;
+    }*/
+    
+    public int getNextKernel(){
+        int kernel = 0;
+        //mask represents all possible states of a multivariable (eg. X(0), X(13), etc.)
+        int[] mask = {0b1111,0b0111,0b1011,0b1101,0b1001,0b0101,0b0011,0b0001};
+        if(kernelNumber >= Math.pow(8, numMultiVars)) {return 0;}
+        int index;
+        for(int i=0; i<numMultiVars; i++) {
+            index = ((kernelNumber >> 3*i) & 0b111); 
+            kernel = (kernel | (mask[index] << 4*i));
+        }
+        kernelNumber++;
+        return kernel;
     }
     
-    public void findKernels() {
-        List<Integer> tmpKernel = new ArrayList<>();
-        
-        for(int i=0; i<onSet.size(); i++) {
-            Integer temp = onSet.get(i) | 0x55555555; //OR's bits with 01 01 01... which changes negative variables to dont cares
-            if (!tmpKernel.contains(temp)) {
-                tmpKernel.add(temp);
-            }   
-        }
-        int maxsize = 0;
-        for (int i=0; i<tmpKernel.size(); i++) {
-            if (kernelLength(tmpKernel.get(i)) > maxsize) {
-                maxsize = kernelLength(tmpKernel.get(i));
-            }
-        }
-        kernel.clear();
-        // Now set the kernel elements in sorted order
-        for (int len=1; len<= maxsize; len++) {
-            for (int j=0; j<tmpKernel.size(); j++) {
-                if (kernelLength(tmpKernel.get(j)) == len) {
-                    kernel.add(tmpKernel.get(j));
-                }
-            }
-        }
-        sortEssentialImplicants();
-    }
-    
-    public void sortEssentialImplicants() {
+    /*public void sortEssentialImplicants() {
         // parse through onSet array and see which kernels cover the onSet
         for(int i=0; i<onSet.size(); i++) {
             int count = 0;
@@ -295,11 +292,11 @@ public class Circuit {
                 kernel.add(0, tmp);
             }
         }
-    }
+    }*/
     
     public boolean validKernel(int kern) { //is one kernel valid or not? return true or false
-        for(int i=0; i<offSet.size(); i++) {
-            if((offSet.get(i) | kern) == kern) {
+        for(int i=0; i<offSetMV.size(); i++) {
+            if((offSetMV.get(i) | kern) == kern) {
                 return false; 
             }
         }
@@ -307,53 +304,40 @@ public class Circuit {
     }
     
     public void evaluateCircuit(boolean batchMode) {
+        printMap();
+        int kernel;
         Diagram diag = new Diagram((int) Math.sqrt(dimension), batchMode);
-        for(int i=0; i<dimension; i++) {
-            findKernels();
-            //printMap();
-            
-            //System.out.println(kernel.size() + " kernels found.");
-            for(int j=0; j<kernel.size(); j++) {
-                //System.out.println("Checking kernel "+ kernelToString(kernel.get(j)));
-                if (validKernel(kernel.get(j)) == true) {
-                    //System.out.println("Add IMPLY Gate to open input");
-                    //System.out.println("Add NAND(" + kernelToString(kernel.get(j)) + ") to O-input of IMPLY Gate");
-                    diag.addIMPLY();
-                    diag.addNAND(kernelToString(kernel.get(j)));
-                    
-                    // Remove the elements from onSet
-                    for(int k=onSet.size()-1; k>=0; k--) {
-                        if(isXContainedInY(onSet.get(k), kernel.get(j))) {
-                            //System.out.println("Removing from onset "+kernelToString(onSet.get(k)));
-                            onSet.remove(k);//remove onSet[k] from list
+        while (!onSetMV.isEmpty()) {
+            while ((kernel=getNextKernel()) > 0) {                
+                boolean flag = false;
+                if (validKernel(kernel) == true) {
+                    // Remove the elements from onSetMV
+                    for(int j=onSetMV.size()-1; j >= 0; j--) {
+                        if(isXContainedInY(onSetMV.get(j), kernel)) {
+                            onSetMV.remove(j);//remove onSet[j] from list
+                            flag = true;
                         }
+                    } 
+                    if(flag == true) {
+                        diag.addIMPLY();
+                        diag.addNAND(kernelToString(kernel)); 
+                        System.out.println(kernelToString(kernel));
                     }
-                    
-                    // Now also remove the additional subset kernels
-                    for(int k=kernel.size()-1; k>j; k--){
-                        if(isXContainedInY(kernel.get(k), kernel.get(j))) {
-                            //System.out.println("Removing kernel " + kernelToString(kernel.get(k)));                          
-                            kernel.remove(k);//remove kernel[k] from list
-                        }                        
-                    }                    
                 }
             }
-
-            if(onSet.isEmpty()) {break;} // We are done
+            if(onSetMV.isEmpty()) {break;} //we are done
             
             //negate the cube by switching onSet and offSet arrays
-            List<Integer> temp = new ArrayList<>(onSet);            
-            onSet.clear();
-            onSet.addAll(offSet);
-            offSet.clear();
-            offSet.addAll(temp);
-            
-            if (!onSet.isEmpty()) {
-                //System.out.println("Add NOT to open input");
-                //printMap();
-                diag.addNOT();
-            }
+            List<Integer> temp = new ArrayList<>(onSetMV);            
+            onSetMV.clear();
+            onSetMV.addAll(offSetMV);
+            offSetMV.clear();
+            offSetMV.addAll(temp);
+            diag.addNOT();
+            System.out.println("Switching onSet and offSet");
+            kernelNumber = 0;
         }
+        
         diag.print();
         totalPulses = diag.getTotalPulses();
     }
