@@ -30,9 +30,11 @@ public class CircuitMV2 {
     private int totalPulses = 0;
     private int[] randomizedVars;
     private int kernelNumber = 0;
+    private int numVars;
     private int numMultiVars;
     
     public CircuitMV2(int numVars) {
+        this.numVars = numVars;
         numVars += numVars%2; //if numVars is odd, add 1 so the pairing will match up later
         //create variable array to be randomized and later mapped to MV variables
         randomizedVars = new int[numVars]; 
@@ -171,6 +173,26 @@ public class CircuitMV2 {
         return strVal;
     }        
     
+    private int kernelPulseCount(int element) {
+        // if the pattern has one zero, e.g. 1101 =X(013), it needs one pulse
+        // if the pattern has two zeros, e.g. 1001 = (X03), it is an AND of
+        //     two primitives e.g. X(013) & X(023), so it will need 2 pulses
+        // if the pattern has three zeros, e.g. 0001, then it is an AND of 
+        //     three primitives e.g. X(013) & X(023) & X(123), so it will need
+        //     3 pulses.
+        // also to note a pattern of 1111 would mean that the MVvariable is 
+        //     not present in expression, so it is 0 pulses
+        // so counting the zeros in the kernels gives the accurate count of pulses
+        // We need to ignore the leading zeros in the integer
+        // Only inspect the rightmost numMultiVars*4 bits, and count the zeros
+        int count = 0;
+        for (int i=0; i<numMultiVars*4; i++) {
+            if ((element & 0b1) == 0) {count++;}
+            element = element >> 1;
+        }
+        return count;
+    }
+    
     /*public void printEquation() {
         for (int i=0; i<minterm.length; i++) {
             System.out.println(minterm[i]);
@@ -231,7 +253,7 @@ public class CircuitMV2 {
                 offSetMV.add(element);
             }
         }
-        printMap();
+        //printMap();
     }
     
     //convert onSet to onSetMV and offset to offSetMV
@@ -304,9 +326,12 @@ public class CircuitMV2 {
     }
     
     public void evaluateCircuit(boolean batchMode) {
-        printMap();
+        //printMap();
         int kernel;
         Diagram diag = new Diagram((int) Math.sqrt(dimension), batchMode);
+        // set totalPulses to 5, which are needed for single-value to 
+        //      multi-value decoders
+        totalPulses = 5;
         while (!onSetMV.isEmpty()) {
             while ((kernel=getNextKernel()) > 0) {                
                 boolean flag = false;
@@ -321,7 +346,8 @@ public class CircuitMV2 {
                     if(flag == true) {
                         diag.addIMPLY();
                         diag.addNAND(kernelToString(kernel)); 
-                        System.out.println(kernelToString(kernel));
+                        totalPulses += kernelPulseCount(kernel) + 1;
+                        //System.out.println(kernelToString(kernel));
                     }
                 }
             }
@@ -334,16 +360,16 @@ public class CircuitMV2 {
             offSetMV.clear();
             offSetMV.addAll(temp);
             diag.addNOT();
-            System.out.println("Switching onSet and offSet");
+            totalPulses++;
+            //System.out.println("Switching onSet and offSet");
             kernelNumber = 0;
         }
         
         diag.print();
-        totalPulses = diag.getTotalPulses();
+        //totalPulses = diag.getTotalPulses();
     }
     
     public int getTotalPulses() { 
         return totalPulses; 
     }
-    
 }
