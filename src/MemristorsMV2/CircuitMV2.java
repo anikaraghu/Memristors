@@ -44,7 +44,6 @@ public class CircuitMV2 {
         numMultiVars = randomizedVars.length;
     }
     
-    /*
     //given the position variable, returns the position number
     private int varPosition(char c) {
         int position = 14 - (c - 'A'); 
@@ -75,7 +74,6 @@ public class CircuitMV2 {
         return element;
     }
     
-    
     //sets a bit equal to 10 assuming the initial values of the bits are 11
     private int setNegativeValue(int x, int position) {
         return (x & ~(1 << position * 2));
@@ -98,7 +96,7 @@ public class CircuitMV2 {
     private int getVarValue (int x, char c) {
         int pos = varPosition(c);
         return getVarValueAtPosition(x, pos);
-    }*/
+    }
     
     //returns true if x is contained in y
     private boolean isXContainedInY (int x, int y) {
@@ -107,7 +105,21 @@ public class CircuitMV2 {
     }
     
     private int binaryToElement(String s) {
-        int binary = Integer.parseInt(s,2); //convert (ie. '010' to the binary integer 010)
+        int element = 0xFFFFFFFF; //creates 32-bit int with all 1'
+        char temp[] = s.toCharArray();
+        for (int j=0; j<temp.length; j++) {
+            int position = (14 - j);
+            if (temp[j] == '0') {
+                element = setNegativeValue(element, position);
+            }
+            else if (temp[j] == '1') {
+                element = setPositiveValue(element, position);                  
+            }
+        }
+        return element;
+    }
+    
+    private int binaryToMVElement(int binary) {
         int element = 0;
         int i=0;
         int n1, n2, bit1, bit2, temp;
@@ -174,17 +186,17 @@ public class CircuitMV2 {
     }        
     
     private int kernelPulseCount(int element) {
-        // if the pattern has one zero, e.g. 1101 =X(013), it needs one pulse
-        // if the pattern has two zeros, e.g. 1001 = (X03), it is an AND of
-        //     two primitives e.g. X(013) & X(023), so it will need 2 pulses
-        // if the pattern has three zeros, e.g. 0001, then it is an AND of 
-        //     three primitives e.g. X(013) & X(023) & X(123), so it will need
-        //     3 pulses.
-        // also to note a pattern of 1111 would mean that the MVvariable is 
-        //     not present in expression, so it is 0 pulses
-        // so counting the zeros in the kernels gives the accurate count of pulses
-        // We need to ignore the leading zeros in the integer
-        // Only inspect the rightmost numMultiVars*4 bits, and count the zeros
+        //if the pattern has one zero, e.g. 1101 =X(013), it needs one pulse
+        //if the pattern has two zeros, e.g. 1001 = (X03), it is an AND of
+        //   two primitives e.g. X(013) & X(023), so it will need 2 pulses
+        //if the pattern has three zeros, e.g. 0001, then it is an AND of 
+        //   three primitives e.g. X(013) & X(023) & X(123), so it will need
+        //   3 pulses.
+        //also to note a pattern of 1111 would mean that the MVvariable is 
+        //   not present in expression, so it is 0 pulses
+        //so counting the zeros in the kernels gives the accurate count of pulses
+        //leading zeros need to be ignored in the integer
+        //Only inspect the rightmost numMultiVars*4 bits, and count the zeros
         int count = 0;
         for (int i=0; i<numMultiVars*4; i++) {
             if ((element & 0b1) == 0) {count++;}
@@ -228,14 +240,14 @@ public class CircuitMV2 {
     }*/
     
     public void setPLA (int numVars, List<String> stmts) {
-        // Add elements to OnSet
-        //dimension= numVars*numVars;
+        //Add elements to OnSet
+        //dimension = numVars * numVars;
         dimension = (int) Math.pow(2, numVars);
         for (int i=0; i<stmts.size(); i++) {
             int element = binaryToElement(stmts.get(i));
-            onSetMV.add(element);
+            onSet.add(element);
         }        
-
+                
         //Add elements to offSet[], if not covered by onSet
         for (int i=0; i<dimension; i++) {
             int x = i | (int) Math.pow(2, numVars);
@@ -244,13 +256,16 @@ public class CircuitMV2 {
             
             // Now check if this value is not in OnSet
             boolean found = false;
-            for (int j=0; j<onSetMV.size(); j++) {
-                if (isXContainedInY(element, onSetMV.get(j))) {
+            for (int j=0; j<onSet.size(); j++) {
+                if (isXContainedInY(element, onSet.get(j))) {
                     found = true;
                 }
             }
-            if (!found) {
-                offSetMV.add(element);
+            int MVelement = binaryToMVElement(i);
+            if (found) {
+                onSetMV.add(MVelement);
+            } else {
+                offSetMV.add(MVelement);
             }
         }
         //printMap();
@@ -294,7 +309,7 @@ public class CircuitMV2 {
     }
     
     /*public void sortEssentialImplicants() {
-        // parse through onSet array and see which kernels cover the onSet
+        //parse through onSet array and see which kernels cover the onSet
         for(int i=0; i<onSet.size(); i++) {
             int count = 0;
             int kIndex = 0;
@@ -305,10 +320,10 @@ public class CircuitMV2 {
                 }
             }
             if (count == 1) {
-                // This implies that this onSet element is covered by one
-                // and only one kernel, which is at index kIndex
-                // Hence it is an Essential Prime Implicant
-                // Move kernel kIndex to top
+                //This implies that this onSet element is covered by one
+                //and only one kernel, which is at index kIndex
+                //Hence it is an Essential Prime Implicant
+                //Move kernel kIndex to top
                 Integer tmp = kernel.get(kIndex);
                 kernel.remove(kIndex);
                 kernel.add(0, tmp);
@@ -325,18 +340,28 @@ public class CircuitMV2 {
         return true;
     }
     
+    public boolean containedInOnset(int kern) { //is one kernel valid or not? return true or false
+        for(int i=0; i<onSet.size(); i++) {
+            if((onSet.get(i) | kern) == kern) {
+                return true; 
+            }
+        }
+        return false;
+    }
+    
     public void evaluateCircuit(boolean batchMode) {
         //printMap();
         int kernel;
         Diagram diag = new Diagram((int) Math.sqrt(dimension), batchMode);
-        // set totalPulses to 5, which are needed for single-value to 
-        //      multi-value decoders
+        //5 pulses are needed for a single-value to multi-value decoder
+        //all decoders can work simultaneously, so only 5 pulses are needed
+        //in total for all decoders
         totalPulses = 5;
         while (!onSetMV.isEmpty()) {
             while ((kernel=getNextKernel()) > 0) {                
                 boolean flag = false;
                 if (validKernel(kernel) == true) {
-                    // Remove the elements from onSetMV
+                    //Remove the elements from onSetMV
                     for(int j=onSetMV.size()-1; j >= 0; j--) {
                         if(isXContainedInY(onSetMV.get(j), kernel)) {
                             onSetMV.remove(j);//remove onSet[j] from list
@@ -360,8 +385,7 @@ public class CircuitMV2 {
             offSetMV.clear();
             offSetMV.addAll(temp);
             diag.addNOT();
-            totalPulses++;
-            //System.out.println("Switching onSet and offSet");
+            totalPulses++; //1 pulse for a NOT gate
             kernelNumber = 0;
         }
         

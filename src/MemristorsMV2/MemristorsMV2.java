@@ -68,6 +68,7 @@ public class MemristorsMV2 {
          Scanner fReader = new Scanner(new File(fname));
          int numVars = 0;
          int numStmts = 0;
+         boolean odd = false;
          List<String> stmts = new ArrayList<>();
          
          while (fReader.hasNext()) {
@@ -77,7 +78,8 @@ public class MemristorsMV2 {
                 continue;          
             }
             else if (line.startsWith(".i")) {
-                numVars = Integer.parseInt(line.substring(3));           
+                numVars = Integer.parseInt(line.substring(3)); 
+                if(numVars % 2 == 1) {odd = true;}
             }
             else if (line.startsWith(".o")) {
                 if(line.endsWith("1")!=true) {return;} 
@@ -88,7 +90,17 @@ public class MemristorsMV2 {
             else if (line.startsWith(".e")) {
                 break;
             }
-            else {stmts.add(line.substring(0, numVars));} 
+            else {
+                //if numVars is odd, add an additional variable so the multi-valued
+                //variable pairing will work out
+                if(odd) {
+                    String temp = line.substring(0, numVars) + '-';
+                    stmts.add(temp);
+                } else {
+                    stmts.add(line.substring(0, numVars));
+                }
+                
+            } 
          }
          
          CircuitMV2 circuit = new CircuitMV2(numVars);   
