@@ -16,6 +16,7 @@ $RECYCLE.BIN/
 
 # Misc
 log*.txt
+*.log
 *.class
 private.*
 build/
