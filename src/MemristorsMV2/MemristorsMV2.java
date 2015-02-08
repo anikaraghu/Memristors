@@ -103,6 +103,7 @@ public class MemristorsMV2 {
             } 
          }
          
+         if(odd) {numVars += 1;}
          CircuitMV2 circuit = new CircuitMV2(numVars);   
          circuit.setPLA(numVars, stmts);
          circuit.evaluateCircuit(batchMode);
