@@ -108,7 +108,8 @@ public class MemristorsMV2 {
          circuit.setPLA(numVars, stmts);
          circuit.evaluateCircuit(batchMode);
 
-         System.out.println(fname + ", " + circuit.getTotalPulses()); 
+         //System.out.println(fname + ", " + circuit.getTotalPulses()); 
+         System.out.println(circuit.getTotalPulses());
          
          /* System.out.println(
                  fname + ", "

@@ -41,15 +41,16 @@ public class CircuitMV2 {
         for (int i=0; i<numVars; i++) {
             randomizedVars[i] = i;
         } 
-        int loops = ((int) Math.random() * 10 + 1);
+        int limit = numVars/2;
+        int loops = (int) (Math.random() * limit);
         for(int i=0; i<loops; i++) {    
-            int ran1 = ((int) Math.random() * numVars);
-            int ran2 = ((int) Math.random() * numVars);
+            int ran1 = (int) (Math.random() * numVars);
+            int ran2 = (int) (Math.random() * numVars);
             int temp = randomizedVars[ran1];
             randomizedVars[ran1] = randomizedVars[ran2];
             randomizedVars[ran2] = temp;
         }
-        numMultiVars = randomizedVars.length;
+        numMultiVars = numVars/2;
     }
     
     //given the position variable, returns the position number
@@ -360,7 +361,7 @@ public class CircuitMV2 {
     public void evaluateCircuit(boolean batchMode) {
         //printMap();
         int kernel;
-        int unrealized = onSetMV.size() + offSetMV.size();
+        int unrealized = 0;
         Diagram diag = new Diagram((int) Math.sqrt(dimension), batchMode);
         //5 pulses are needed for a single-value to multi-value decoder
         //all decoders can work simultaneously, so only 5 pulses are needed
@@ -381,7 +382,7 @@ public class CircuitMV2 {
                         diag.addIMPLY();
                         diag.addNAND(kernelToString(kernel)); 
                         totalPulses += kernelPulseCount(kernel) + 1;
-                        System.out.println(kernelToString(kernel));
+                        //System.out.println(kernelToString(kernel));
                     }
                 }
             }
@@ -395,6 +396,7 @@ public class CircuitMV2 {
             offSetMV.addAll(temp);
             diag.addNOT();
             if(onSetMV.size() + offSetMV.size() == unrealized) {
+                System.out.println("Stuck in a loop. Exiting.");
                 break;
             } else {unrealized = onSetMV.size() + offSetMV.size();}
             //System.out.println("Switch onset and offset");
